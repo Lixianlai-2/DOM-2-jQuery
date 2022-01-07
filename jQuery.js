@@ -32,6 +32,7 @@ window.jQuery = function (selectorOrArray) {
   // 2.省略定义，直接return方法集合的对象
   //   直接return对象，是为了能够调用里面的函数
   return {
+    oldApi: selectorOrArray.oldApi, // 也就是this.oldApi
     // 在main.js中，如果div.addClass(className).call(div,className)；也相当于div.addClass(className).call(this,className)
     addClass(className) {
       // 函数内操作函数外的elements，这就是闭包
@@ -61,10 +62,26 @@ window.jQuery = function (selectorOrArray) {
 
         console.log(array);
       }
+      array.oldApi = this; // this就是旧的api对象。给数组提供了一个新的属性，这个属性就是旧的api对象，也就是旧的this
+      console.log(array);
 
       // 这一步操作是为了进行链式操作，这里是让elements变成了数组，可以进行数组操作
       const newApi = jQuery(array);
       return newApi;
+    },
+
+    end() {
+      return this.oldApi; // this就是新的 api
+    },
+
+    // 遍历
+    each(fn) {
+      for (let i = 0; i < elements.length; i++) {
+        fn.call(null, elements[i], i);
+      }
+
+      //   记住要return this，不然无法链式操作
+      return this;
     },
   };
 };
