@@ -35,5 +35,32 @@ window.jQuery = function (selectorOrArray) {
     end() {
       return this.oldApi;
     },
+
+    print() {
+      console.log(elements);
+    },
+
+    each(fn) {
+      for (let i = 0; i < elements.length; i++) {
+        fn.call(null, elements[i], i);
+      }
+      //   记住要return this，不然无法链式操作
+      return this;
+    },
+
+    print() {
+      console.log(selectorOrArray);
+    },
+
+    parent() {
+      const array = [];
+      this.each((node) => {
+        if (array.indexOf(node.parentNode) === -1) {
+          // push之后,array里面就是父元素了
+          array.push(node.parentNode);
+        }
+      });
+      return jQuery(array);
+    },
   };
 };
