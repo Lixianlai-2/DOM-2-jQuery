@@ -62,5 +62,47 @@ window.jQuery = function (selectorOrArray) {
       });
       return jQuery(array);
     },
+
+    children() {
+      const array = [];
+      this.each((node) => {
+        //   ...是展开运算符，将数组中的内容单独拿出来
+        array.push(...node.children);
+      });
+      return jQuery(array);
+    },
+
+    siblings() {
+      let siblingArr = [];
+
+      this.each((node) => {
+        let allChildren = node.parentNode.children;
+        // console.log(allChildren);
+        for (let i = 0; i < allChildren.length; i++) {
+          // 当子节点不等于node时，放入siblingArr数组中
+          if (allChildren[i] !== node) {
+            // console.log(allChildren[i]);
+            siblingArr.push(allChildren[i]);
+          }
+        }
+      });
+      console.log(siblingArr);
+      return jQuery(siblingArr);
+    },
+
+    index() {
+      let i;
+      this.each((node) => {
+        const list = node.parentNode.children;
+
+        for (i = 0; i < list.length; i++) {
+          if (list[i] === node) {
+            break;
+          }
+        }
+        console.log(i);
+      });
+      return this;
+    },
   };
 };

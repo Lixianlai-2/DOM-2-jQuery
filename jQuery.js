@@ -77,6 +77,7 @@ window.jQuery = function (selectorOrArray) {
     // 遍历
     each(fn) {
       for (let i = 0; i < elements.length; i++) {
+        //  这里的elements[i]会作为fn的第一个参数
         fn.call(null, elements[i], i);
       }
       //   记住要return this，不然无法链式操作
@@ -145,11 +146,19 @@ window.jQuery = function (selectorOrArray) {
       return this;
     },
 
-    before(beforeNode, selector) {
-      selector.parentNode.insertBefore(beforeNode, selector);
-      return this;
-    },
+    // before(beforeNode, selector) {
+    //   this.each((el) => {
+    //     if (el === selector) {
+    //       el.parentNode.insertBefore(beforeNode, selector);
+    //     }
+    //     console.log(el);
+    //     // console.log(el === selector);
+    //   });
+    //   return this;
+    // },
 
-    after()
+    // after(nodeNextSiblingPrevious, node) {
+    //   node.parentNode.insertBefore(nodeNextSiblingPrevious, node.nextSibling);
+    // },
   };
 };
