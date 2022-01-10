@@ -1,23 +1,26 @@
 window.$ = window.jQuery = function (selectorOrArrayOrTemplate) {
+  //   const elements = document.querySelectorAll(selectorOrArrayOrTemplate);
+
   function createHTML(string) {
     const container = document.createElement("template");
     container.innerHTML = string.trim();
     return container.content.firstChild;
   }
-  //   const elements = document.querySelectorAll(selectorOrArrayOrTemplate);
+
   //   // 这部分就是重载
   let elements;
   //   console.log(selectorOrArrayOrTemplate);
   if (selectorOrArrayOrTemplate[0] === "<") {
     elements = createHTML(selectorOrArrayOrTemplate);
+    console.log(elements);
   } else if (typeof selectorOrArrayOrTemplate === "string") {
     elements = document.querySelectorAll(selectorOrArrayOrTemplate);
-    console.log(elements);
+    // console.log(elements);
 
     // 如果是数组函数构造的实例
   } else if (selectorOrArrayOrTemplate instanceof Array) {
     elements = selectorOrArrayOrTemplate; //保持其数组
-    console.log(elements);
+    // console.log(elements);
   }
 
   // 1.将对象定义为api，然后return这个api
@@ -44,6 +47,8 @@ window.$ = window.jQuery = function (selectorOrArrayOrTemplate) {
   // 这样api就能调用原型中的方法了
   const api = Object.create(jQuery.prototype);
 
+  // Object.assign() 方法用于将所有可枚举属性的值从一个或多个源对象分配到目标对象。它将返回目标对象。
+  // 把下面的第二个参数，也就是那个对象中的内容，分配给api参数
   Object.assign(api, {
     elements: elements,
     oldApi: selectorOrArrayOrTemplate,
@@ -55,16 +60,37 @@ window.$ = window.jQuery = function (selectorOrArrayOrTemplate) {
 // 让jQuery的原型中有下面这些方法
 // 让jQuery的fn属性也能调用这些原型中的方法
 jQuery.fn = jQuery.prototype = {
-  // 如果不写是什么效果
   constructor: jQuery,
 
-  // 这一行是什么意思？
   jquery: true,
+
+  get(index) {
+    return this.elements[index];
+  },
+
+  appendTo(node) {
+    if (node instanceof Element) {
+      this.each((el) => node.appendChild(el));
+    } else if (node.jquery === true) {
+      this.each((el) => node.get(0).appendChild(el));
+    }
+  },
+
+  append(children) {
+    if (children instanceof Element) {
+      this.get(0).appendChild(children);
+    } else if (children instanceof HTMLAllCollection) {
+      for (let i = 0; i < children.length; i++) {
+        this.get(0).appendChild(children[i]);
+      }
+    }
+  },
+
   // 在main.js中，如果div.addClass(className).call(div,className)；也相当于div.addClass(className).call(this,className)
   addClass(className) {
     // 函数内操作函数外的elements，这就是闭包
-    for (let i = 0; i < elements.length; i++) {
-      elements[i].classList.add(className);
+    for (let i = 0; i < this.elements.length; i++) {
+      this.elements[i].classList.add(className);
     }
 
     //   这里return之后，就能再次调用addClass,也就是进行链式操作
@@ -76,8 +102,10 @@ jQuery.fn = jQuery.prototype = {
 
   find(selector) {
     let array = [];
-    for (let i = 0; i < elements.length; i++) {
-      const arrElements = Array.from(elements[i].querySelectorAll(selector));
+    for (let i = 0; i < this.elements.length; i++) {
+      const arrElements = Array.from(
+        this.elements[i].querySelectorAll(selector)
+      );
       console.log(arrElements);
       // concat() 方法用于合并两个或多个数组。此方法不会更改现有数组，而是返回一个新数组
       array = array.concat(arrElements);
@@ -103,16 +131,16 @@ jQuery.fn = jQuery.prototype = {
 
   // 遍历
   each(fn) {
-    for (let i = 0; i < elements.length; i++) {
+    for (let i = 0; i < this.elements.length; i++) {
       //  这里的elements[i]会作为fn的第一个参数
-      fn.call(null, elements[i], i);
+      fn.call(null, this.elements[i], i);
     }
     //   记住要return this，不然无法链式操作
     return this;
   },
 
   print() {
-    console.log(elements);
+    console.log(this.elements);
     return this;
   },
 

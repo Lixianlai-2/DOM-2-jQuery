@@ -1,6 +1,8 @@
 // 测试find
 // jQuery(".test").find(".tt").addClass("red");
 
+// const { noConflict } = require("jquery");
+
 // ------------------------------------------------------------
 // 进行链式操作
 // jQuery(".test")
@@ -90,4 +92,5 @@
 // // $div.find(".tt").addClass("blue");
 
 // ------------------------------------------------------------
-const $div = $("<div>1</div>").print();
+// const $div = $(".test").print().addClass("red");
+$("<div class='diyi'>1<div>").appendTo("body");
